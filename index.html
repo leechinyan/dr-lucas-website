@@ -65,7 +65,7 @@ const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const $=id=>document.getElementById(id);
 
 function render(){
-  $('title').textContent=`${view.getFullYear()}Year${view.getMonth()+1}Month`;
+  $('title').textContent=`${view.getFullYear()}/${view.getMonth()+1}`;
   $('prev').disabled=view<=new Date(today.getFullYear(),today.getMonth(),1);
   $('next').disabled=view>=new Date(today.getFullYear(),today.getMonth()+2,1);
   let h=['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'].map(x=>`<div class="dow">${x}</div>`).join('');
