@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dr. Lucas — Appointment</title>
+<title>五金鹿卡斯 — Appointment</title>
 <style>
 :root{
   --ink:#18324a; --muted:#6c7d8c; --line:#dce6ed; --bg:#f5f9fc;
@@ -49,7 +49,7 @@ textarea{min-height:90px;resize:vertical}
 <header class="hero">
   <div class="hero-inner">
     <div class="badge">Private Appointment Portal</div>
-    <h1>Dr. Lucas</h1>
+    <h1>五金鹿卡斯 </h1>
     <p>Request an appointment and provide a few details so we can understand the purpose of your visit.</p>
   </div>
 </header>
@@ -75,9 +75,8 @@ textarea{min-height:90px;resize:vertical}
           <option value="">Select a purpose</option>
           <option>General consultation</option>
           <option>Follow-up consultation</option>
-          <option>Health screening</option>
-          <option>Medication review</option>
-          <option>Medical certificate / documentation</option>
+          <option>Advice Seeking</option>
+          <option>Lunch/Dinner</option>
           <option>Other</option>
         </select>
       </div>
@@ -93,7 +92,7 @@ textarea{min-height:90px;resize:vertical}
       <div class="full">
         <label>Select a date</label>
         <div class="calendar-head">
-          <strong>October — December 2026</strong>
+          <strong>October 2026</strong>
           <span style="font-size:12px;color:#9aa8b3">All dates fully booked</span>
         </div>
         <div id="calendar" class="calendar"></div>
@@ -115,7 +114,7 @@ textarea{min-height:90px;resize:vertical}
     </div>
   </form>
 </section>
-<div class="footer">© 2026 Dr. Lucas · Appointment requests are subject to confirmation.</div>
+<div class="footer">© 2026 五金鹿卡斯 · Appointment requests are subject to confirmation.</div>
 </main>
 
 <script>
@@ -125,8 +124,8 @@ weekdays.forEach(w => {
   const el=document.createElement("div"); el.className="weekday"; el.textContent=w; calendar.appendChild(el);
 });
 
-const start = new Date(2026,9,1);   // Oct 1
-const end = new Date(2026,11,31);   // Dec 31
+const start = new Date(2026,10,1);   // Oct 1
+const end = new Date(2026,10,31);   // Oct 31
 const firstDay = start.getDay();
 for(let i=0;i<firstDay;i++){
   const el=document.createElement("div"); el.className="day empty"; calendar.appendChild(el);
@@ -136,7 +135,7 @@ for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
   el.className="day booked";
   el.textContent=d.getDate();
   el.title="Fully booked";
-  const now=new Date(2026,9,1);
+  const now=new Date(2026,10,1);
   if(d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth() && d.getDate()===now.getDate()) el.classList.add("today");
   calendar.appendChild(el);
 }
