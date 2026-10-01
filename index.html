@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,26 +33,26 @@ footer{max-width:520px;margin:40px auto 32px;padding:0 20px;font-size:12px;color
 </style>
 </head>
 <body>
-<header><h1>五金鹿卡斯</h1><p>预约服务</p></header>
+<header><h1>五金鹿卡斯</h1><p>Appointment</p></header>
 <main>
-<label for="contact">联系电话</label>
-<input id="contact" type="tel" inputmode="tel" placeholder="例如 012-3456789" autocomplete="tel">
+<label for="contact">Contact</label>
+<input id="contact" type="tel" inputmode="tel" placeholder="Eg. 012-3456789" autocomplete="tel">
 
-<label for="purpose">预约目的</label>
+<label for="purpose">Purpose of Appointment</label>
 <select id="purpose">
-<option value="">请选择</option>
-<option>购买五金材料</option><option>维修咨询</option><option>索取报价</option>
-<option>取货</option><option>其他</option>
+<option value="">Please select</option>
+<option>Hardware Purchasing</option><option>Lunch/Dinner</option><option>Advice Seeking</option>
+<option>Others</option>
 </select>
 
-<label>预约日期</label>
+<label>Appointment Date</label>
 <div class="cal">
-<div class="cal-head"><button id="prev" aria-label="上个月">‹</button><strong id="title"></strong><button id="next" aria-label="下个月">›</button></div>
+<div class="cal-head"><button id="prev" aria-label="Last month">‹</button><strong id="title"></strong><button id="next" aria-label="Next Month">›</button></div>
 <div class="grid" id="grid"></div>
-<div class="legend">灰色日期已约满</div>
+<div class="legend">Fully Booked</div>
 </div>
 
-<button class="submit" id="go">提交预约</button>
+<button class="submit" id="go">Request Appointment</button>
 <div id="msg" role="status"></div>
 </main>
 <footer>本网站会记录访问时间、IP 地址及大概所在地（国家、城市），用于预约管理。继续使用即表示同意。</footer>
@@ -65,10 +65,10 @@ const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const $=id=>document.getElementById(id);
 
 function render(){
-  $('title').textContent=`${view.getFullYear()}年${view.getMonth()+1}月`;
+  $('title').textContent=`${view.getFullYear()}Year${view.getMonth()+1}Month`;
   $('prev').disabled=view<=new Date(today.getFullYear(),today.getMonth(),1);
   $('next').disabled=view>=new Date(today.getFullYear(),today.getMonth()+2,1);
-  let h=['日','一','二','三','四','五','六'].map(x=>`<div class="dow">${x}</div>`).join('');
+  let h=['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'].map(x=>`<div class="dow">${x}</div>`).join('');
   const first=view.getDay?new Date(view).getDay():0;
   for(let i=0;i<first;i++)h+='<div></div>';
   const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
@@ -90,9 +90,9 @@ fetch('/api/visit',{method:'POST'}).catch(()=>{});
 $('go').onclick=async()=>{
   const m=$('msg'),contact=$('contact').value.trim(),purpose=$('purpose').value;
   m.className='';
-  if(!/^[0-9+\-\s]{7,16}$/.test(contact)){m.className='err';m.textContent='请输入有效的联系电话';return}
-  if(!purpose){m.className='err';m.textContent='请选择预约目的';return}
-  if(!picked){m.className='err';m.textContent='请选择预约日期';return}
+  if(!/^[0-9+\-\s]{7,16}$/.test(contact)){m.className='err';m.textContent='Contact number';return}
+  if(!purpose){m.className='err';m.textContent='Purpose of Appointment';return}
+  if(!picked){m.className='err';m.textContent='Please select a date';return}
   try{
     const r=await fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contact,purpose,date:picked})});
     const j=await r.json();
