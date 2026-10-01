@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Lucas — Appointment</title>
+<style>
+:root{
+  --ink:#18324a; --muted:#6c7d8c; --line:#dce6ed; --bg:#f5f9fc;
+  --card:#fff; --accent:#2c89a0; --accent2:#dff3f5; --danger:#a35a5a;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+.hero{background:linear-gradient(135deg,#18324a,#2c7183);color:white;padding:54px 20px 76px}
+.hero-inner{max-width:1050px;margin:auto}
+.badge{display:inline-block;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.14);font-size:13px;margin-bottom:18px}
+h1{font-size:44px;line-height:1.05;margin:0 0 12px}
+.hero p{max-width:600px;color:#dcecf2;font-size:17px;margin:0}
+.container{max-width:1050px;margin:-42px auto 50px;padding:0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 14px 40px rgba(24,50,74,.08);padding:30px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.full{grid-column:1/-1}
+label{display:block;font-size:14px;font-weight:700;margin:0 0 8px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:13px 14px;font-size:15px;outline:none;background:white;color:var(--ink)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(44,137,160,.1)}
+textarea{min-height:90px;resize:vertical}
+.section-title{font-size:21px;margin:0 0 20px}
+.info{background:var(--accent2);border-radius:13px;padding:14px 16px;color:#245b68;font-size:14px;margin-bottom:24px}
+.calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.calendar-head strong{font-size:18px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.weekday{text-align:center;color:var(--muted);font-size:12px;font-weight:700;padding:6px}
+.day{min-height:55px;border:1px solid var(--line);border-radius:10px;background:#fafcfd;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9aa8b3;position:relative}
+.day.booked{background:#f5f6f7;color:#9aa8b3;cursor:not-allowed}
+.day.booked:after{content:"FULL";position:absolute;bottom:5px;font-size:7px;font-weight:800;color:#b16b6b;letter-spacing:.5px}
+.day.empty{border:0;background:transparent}
+.day.today{outline:2px solid var(--accent);outline-offset:-2px}
+.legend{display:flex;gap:18px;font-size:12px;color:var(--muted);margin-top:13px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#e9ecef;margin-right:5px}
+.dot.today{background:var(--accent)}
+.submit{width:100%;border:0;border-radius:12px;padding:15px;background:var(--accent);color:white;font-size:16px;font-weight:800;cursor:pointer}
+.submit:hover{filter:brightness(.95)}
+.status{display:none;margin-top:14px;padding:13px;border-radius:11px;background:#e7f6ec;color:#24613a;font-size:14px}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+@media(max-width:700px){h1{font-size:34px}.grid{grid-template-columns:1fr}.full{grid-column:auto}.card{padding:22px}.container{padding:0 12px}.hero{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <div class="badge">Private Appointment Portal</div>
+    <h1>Dr. Lucas</h1>
+    <p>Request an appointment and provide a few details so we can understand the purpose of your visit.</p>
+  </div>
+</header>
+
+<main class="container">
+<section class="card">
+  <h2 class="section-title">Appointment Request</h2>
+  <div class="info"><strong>Booking notice:</strong> All dates from today through 31 December 2026 are currently fully booked.</div>
+
+  <form id="appointmentForm">
+    <div class="grid">
+      <div>
+        <label for="name">Patient name</label>
+        <input id="name" required placeholder="Your full name">
+      </div>
+      <div>
+        <label for="phone">Contact number</label>
+        <input id="phone" type="tel" required placeholder="+60 12-345 6789">
+      </div>
+      <div>
+        <label for="purpose">Appointment purpose</label>
+        <select id="purpose" required>
+          <option value="">Select a purpose</option>
+          <option>General consultation</option>
+          <option>Follow-up consultation</option>
+          <option>Health screening</option>
+          <option>Medication review</option>
+          <option>Medical certificate / documentation</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div>
+        <label for="preferred">Preferred contact method</label>
+        <select id="preferred">
+          <option>Phone call</option>
+          <option>WhatsApp</option>
+          <option>SMS</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label>Select a date</label>
+        <div class="calendar-head">
+          <strong>October — December 2026</strong>
+          <span style="font-size:12px;color:#9aa8b3">All dates fully booked</span>
+        </div>
+        <div id="calendar" class="calendar"></div>
+        <div class="legend">
+          <span><i class="dot"></i>Fully booked</span>
+          <span><i class="dot today"></i>Today</span>
+        </div>
+      </div>
+
+      <div class="full">
+        <label for="notes">Additional information</label>
+        <textarea id="notes" placeholder="Optional — briefly describe anything relevant to your appointment"></textarea>
+      </div>
+
+      <div class="full">
+        <button class="submit" type="submit">Request an Appointment</button>
+        <div id="status" class="status"></div>
+      </div>
+    </div>
+  </form>
+</section>
+<div class="footer">© 2026 Dr. Lucas · Appointment requests are subject to confirmation.</div>
+</main>
+
+<script>
+const calendar = document.getElementById("calendar");
+const weekdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+weekdays.forEach(w => {
+  const el=document.createElement("div"); el.className="weekday"; el.textContent=w; calendar.appendChild(el);
+});
+
+const start = new Date(2026,9,1);   // Oct 1
+const end = new Date(2026,11,31);   // Dec 31
+const firstDay = start.getDay();
+for(let i=0;i<firstDay;i++){
+  const el=document.createElement("div"); el.className="day empty"; calendar.appendChild(el);
+}
+for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)){
+  const el=document.createElement("div");
+  el.className="day booked";
+  el.textContent=d.getDate();
+  el.title="Fully booked";
+  const now=new Date(2026,9,1);
+  if(d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth() && d.getDate()===now.getDate()) el.classList.add("today");
+  calendar.appendChild(el);
+}
+
+document.getElementById("appointmentForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  const status=document.getElementById("status");
+  status.style.display="block";
+  status.textContent="Thank you. All dates are currently fully booked, so this request cannot be confirmed yet.";
+});
+</script>
+</body>
+</html>
