@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五金鹿卡斯</title>
+<style>
+:root{--bg:#f2f2f0;--ink:#222;--mute:#6b6b6b;--line:#d6d6d2;--accent:#1f4e5f;--full:#e4e4e1}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:#fff;color:var(--ink)}
+header{background:var(--bg);border-bottom:1px solid var(--line);padding:48px 20px;text-align:center}
+header h1{margin:0;font-size:clamp(38px,7vw,60px);letter-spacing:.08em;font-weight:780}
+header p{margin:12px 0 0;color:var(--mute)}
+main{max-width:520px;margin:32px auto;padding:0 20px}
+label{display:block;margin:22px 0 8px;font-weight:600}
+input[type=tel],select{width:100%;padding:12px;border:1px solid var(--line);border-radius:6px;font-size:16px;background:#fff}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.cal{border:1px solid var(--line);border-radius:6px;padding:12px}
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.cal-head button{border:1px solid var(--line);background:#fff;border-radius:6px;width:36px;height:36px;cursor:pointer;font-size:16px}
+.cal-head button:disabled{opacity:.3;cursor:default}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.dow{font-size:13px;color:var(--mute);padding:4px 0}
+.d{padding:10px 0;border:1px solid transparent;border-radius:6px;background:#fff;font-size:15px;cursor:pointer}
+.d:hover:not(:disabled){border-color:var(--accent)}
+.d:disabled{background:var(--full);color:#a0a09c;cursor:not-allowed;text-decoration:line-through}
+.d.sel{background:var(--accent);color:#fff}
+.legend{font-size:13px;color:var(--mute);margin-top:8px}
+.submit{margin-top:28px;width:100%;padding:14px;border:0;border-radius:6px;background:var(--accent);color:#fff;font-size:17px;cursor:pointer}
+#msg{margin-top:16px;min-height:24px}
+.ok{color:#1b6b3a}.err{color:#b3261e}
+footer{max-width:520px;margin:40px auto 32px;padding:0 20px;font-size:12px;color:var(--mute)}
+</style>
+</head>
+<body>
+<header><h1>五金鹿卡斯</h1><p>Scheduled Private Appointment</p></header>
+<main>
+<label for="contact">Contact</label>
+<input id="contact" type="tel" inputmode="tel" placeholder="Eg. 012-3456789" autocomplete="tel">
+
+<label for="purpose">Purpose of Appointment</label>
+<select id="purpose">
+<option value="">Please select</option>
+<option>Hardware Purchasing</option><option>Lunch/Dinner</option><option>Advice Seeking</option>
+<option>Others</option>
+</select>
+
+<label>Appointment Date</label>
+<div class="cal">
+<div class="cal-head"><button id="prev" aria-label="Last month">‹</button><strong id="title"></strong><button id="next" aria-label="Next Month">›</button></div>
+<div class="grid" id="grid"></div>
+<div class="legend">**Fully Booked**</div>
+</div>
+
+<button class="submit" id="go">Request Appointment</button>
+<div id="msg" role="status"></div>
+</main>
+<footer>Copyright © 2026 五金鹿卡斯. All Rights Reserved.</footer>
+<script>
+const today=new Date();today.setHours(0,0,0,0);
+const endOfMonth=new Date(today.getFullYear(),today.getMonth()+1,0);
+let view=new Date(today.getFullYear(),today.getMonth(),1),picked=null;
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const $=id=>document.getElementById(id);
+
+function render(){
+  $('title').textContent=`${view.getFullYear()}/${view.getMonth()+1}`;
+  $('prev').disabled=view<=new Date(today.getFullYear(),today.getMonth(),1);
+  $('next').disabled=view>=new Date(today.getFullYear(),today.getMonth()+2,1);
+  let h=['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'].map(x=>`<div class="dow">${x}</div>`).join('');
+  const first=view.getDay?new Date(view).getDay():0;
+  for(let i=0;i<first;i++)h+='<div></div>';
+  const n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
+  for(let d=1;d<=n;d++){
+    const dt=new Date(view.getFullYear(),view.getMonth(),d);
+    const full=dt<=endOfMonth; // today..end of this month = fully booked (past days too)
+    h+=`<button class="d${picked===iso(dt)?' sel':''}" data-d="${iso(dt)}" ${full?'disabled':''}>${d}</button>`;
+  }
+  $('grid').innerHTML=h;
+}
+$('grid').onclick=e=>{const b=e.target.closest('.d');if(b&&!b.disabled){picked=b.dataset.d;render()}};
+$('prev').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()-1,1);render()};
+$('next').onclick=()=>{view=new Date(view.getFullYear(),view.getMonth()+1,1);render()};
+render();
+
+// log the visit once per page load
+fetch('/api/visit',{method:'POST'}).catch(()=>{});
+
+$('go').onclick=async()=>{
+  const m=$('msg'),contact=$('contact').value.trim(),purpose=$('purpose').value;
+  m.className='';
+  if(!/^[0-9+\-\s]{7,16}$/.test(contact)){m.className='err';m.textContent='Contact number';return}
+  if(!purpose){m.className='err';m.textContent='Purpose of Appointment';return}
+  if(!picked){m.className='err';m.textContent='Please select a date';return}
+  try{
+    const r=await fetch('/api/book',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contact,purpose,date:picked})});
+    const j=await r.json();
+    m.className=r.ok?'ok':'err';m.textContent=j.message;
+  }catch{m.className='err';m.textContent='Unable connect to server, please try again'}
+};
+</script>
+</body>
+</html>
