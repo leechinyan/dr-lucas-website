@@ -13,7 +13,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from openpyxl import Workbook, load_workbook
 
 # >>> change this to your real file name <<<
-EXCEL_PATH = Path.home() / "Downloads" / "logtemp.xlsx"
+EXCEL_PATH = https://github.com/leechinyan/dr-lucas-website/blob/0674a6c87f141020df5ebb1e9345c9ab17fa3cd3/logtemp.xlsx
 HEADERS = ["Timestamp", "IP", "Country", "City", "Contact", "Purpose", "Appointment Date"]
 
 app = Flask(__name__)
